@@ -1,1 +1,3 @@
 lib/stfpmi_api/main/token
+__pycache__
+.idea
