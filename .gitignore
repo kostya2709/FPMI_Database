@@ -1,3 +1,9 @@
+# Ignore the file with token, which is necessary
+# to connect with the account on stfpmi.ru
 lib/stfpmi_api/main/token
-__pycache__
+
+# Ignore pycache
+*/__pycache__
+
+# Ignore an automatically generated folder
 .idea
