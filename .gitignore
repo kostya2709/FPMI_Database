@@ -3,7 +3,11 @@
 lib/stfpmi_api/main/token
 
 # Ignore pycache
-*/__pycache__
+lib/stfpmi_api/abstract_class/__pycache__
+lib/stfpmi_api/main/__pycache__
+lib/stfpmi_api/people_classes/__pycache__
+lib/stfpmi_api/rooms_classes/__pycache__
+lib/stfpmi_api/test_queries/__pycache__
 
 # Ignore an automatically generated folder
 .idea
