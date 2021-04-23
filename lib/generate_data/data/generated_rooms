@@ -1,0 +1,15 @@
+insert into room (dormitory_num, room_num) values (2, 201);
+insert into room (dormitory_num, room_num) values (2, 202);
+insert into room (dormitory_num, room_num) values (12, 203);
+insert into room (dormitory_num, room_num) values (2, 204);
+insert into room (dormitory_num, room_num) values (12, 205);
+insert into room (dormitory_num, room_num) values (12, 206);
+insert into room (dormitory_num, room_num) values (12, 207);
+insert into room (dormitory_num, room_num) values (2, 208);
+insert into room (dormitory_num, room_num) values (12, 209);
+insert into room (dormitory_num, room_num) values (12, 210);
+insert into room (dormitory_num, room_num) values (2, 211);
+insert into room (dormitory_num, room_num) values (2, 212);
+insert into room (dormitory_num, room_num) values (2, 213);
+insert into room (dormitory_num, room_num) values (2, 214);
+insert into room (dormitory_num, room_num) values (12, 215);
