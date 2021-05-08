@@ -9,9 +9,51 @@ class SpecialRoom:
 
 class StfpmiAPI:
     def __init__(self):
-        with open('main/token') as token_file:
-            self.__token = token_file.read()
+        self.__token = self.__GetToken()
         self.__headers = {"accept": "application/json", "Authorization": self.__token}
+
+    def __GetToken(self):
+        """This method gives an available token. If the user is already authorized,
+        the token is stored in file "main/token". Otherwise the method requests
+        user's username and password.
+
+        Exception:
+            RuntimeError:   something went wrong while getting token.
+
+        """
+        token = ""
+        token_file_name = "main/token"
+
+        # If the user is already authorized, token is stored in the special file.
+        try:
+            with open(token_file_name, "r") as token_file:
+                token = token_file.read()
+
+        # If the file does not exist, the user is not authorized. Let's authorize and save
+        # the token into the file.
+        except FileNotFoundError as error:
+            token = self.__Authorize()
+            with open(token_file_name, 'w') as token_file:
+                token_file.write(token)
+
+        except:
+            raise RuntimeError("An unexpected exception while getting a token!")
+
+        return token
+
+    def __Authorize(self):
+        url = f"https://stfpmi.ru/api/login"
+        print("You have not been authorized yet.")
+        username = input("Insert your username: ")
+        password = input("Insert your password: ")
+        response = requests.post(url, data={"username": username, "password": password})
+
+        if response.status_code == 200:
+            print("You have been successfully authorized!\n")
+        else:
+            raise RuntimeError("An error occurred while trying to authorize.")
+
+        return response.json()["token"]
 
     def FindPerson(self, surname):
         username = str(surname.encode("utf-8"))[2: -1]  # Skip initial and final symbols: b'some_string' -> some_string
