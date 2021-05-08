@@ -1,18 +1,21 @@
 from lib.stfpmi_api.people_classes.PersonInfo import PersonInfo
 from lib.stfpmi_api.people_classes.ShortPersonInfo import ShortPersonInfo
 from lib.stfpmi_api.people_classes.Group import GroupInfo
+from lib.stfpmi_api.rooms_classes.WashingMachine import WashingMachine
 from datetime import datetime
 import requests
+
 
 class SpecialRoom:
     washing = 2
 
+
 class StfpmiAPI:
     def __init__(self):
-        self.__token = self.__GetToken()
+        self.__token = self._get_token()
         self.__headers = {"accept": "application/json", "Authorization": self.__token}
 
-    def __GetToken(self):
+    def _get_token(self):
         """This method gives an available token. If the user is already authorized,
         the token is stored in file "main/token". Otherwise the method requests
         user's username and password.
@@ -32,7 +35,7 @@ class StfpmiAPI:
         # If the file does not exist, the user is not authorized. Let's authorize and save
         # the token into the file.
         except FileNotFoundError as error:
-            token = self.__Authorize()
+            token = self._authorize()
             with open(token_file_name, 'w') as token_file:
                 token_file.write(token)
 
@@ -41,7 +44,7 @@ class StfpmiAPI:
 
         return token
 
-    def __Authorize(self):
+    def _authorize(self):
         url = f"https://stfpmi.ru/api/login"
         print("You have not been authorized yet.")
         username = input("Insert your username: ")
@@ -55,7 +58,7 @@ class StfpmiAPI:
 
         return response.json()["token"]
 
-    def FindPerson(self, surname):
+    def find_person(self, surname):
         username = str(surname.encode("utf-8"))[2: -1]  # Skip initial and final symbols: b'some_string' -> some_string
         username = username.replace("\\x",
                                     "%").upper()  # Prepare the string: \xd0\x94\xd1\x80\xd0\xb0\xd0\xb3\xd1\x83\xd0\xbd ->
@@ -65,17 +68,17 @@ class StfpmiAPI:
         response = requests.get(url, headers=self.__headers)
         return PersonInfo(response.json()[0])
 
-    def GetUserInfo(self):
+    def get_user_info(self):
         url = "https://stfpmi.ru/api/accounts/profile/my"
         response = requests.get(url, headers=self.__headers)
         return PersonInfo(response.json())
 
-    def FindGroupInfo(self, group_no):
+    def find_group_info(self, group_no):
         url = "https://stfpmi.ru/api/accounts/search_by_groupname/" + str(group_no)
         response = requests.get(url, headers=self.__headers)
         return GroupInfo(response.json())
 
-    def WashingMachine(self, begin_time_iso, end_time_iso=datetime.now().isoformat()):
+    def washing_machine_records(self, begin_time_iso, end_time_iso=datetime.now().isoformat()):
         url = f"https://stfpmi.ru/api/washing/all_records/{SpecialRoom.washing}/{begin_time_iso}/{end_time_iso}"
         response = requests.get(url, headers=self.__headers)
         return list(map(WashingMachine, response.json()))
