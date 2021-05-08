@@ -1,6 +1,7 @@
 
 set search_path = 'project';
 
+
 -- function that makes mask over the input string
 -- Default behaviour: some_string -> sXXXXXXXXXX
 drop function if exists make_mask(str_txt char(27), left_no int, sym_num int, sym_ch character);
