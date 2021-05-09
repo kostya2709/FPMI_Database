@@ -1,14 +1,21 @@
 from lib.stfpmi_api.people_classes.PersonInfo import PersonInfo
 from lib.stfpmi_api.people_classes.ShortPersonInfo import ShortPersonInfo
 from lib.stfpmi_api.people_classes.Group import GroupInfo
+
 from lib.stfpmi_api.rooms_classes.WashingMachine import WashingMachine
+from lib.stfpmi_api.rooms_classes.ScheduledRoom import ScheduledRoom
+
 from datetime import datetime
 import requests
 
 
 class SpecialRoom:
     washing = 2
-
+    room_id = {"клуб": 1,
+               "игровая": 2,
+               "кдс": 3,
+               "комната для собраний": 3,
+               "переговорная": 4}
 
 class StfpmiAPI:
     def __init__(self):
@@ -59,14 +66,23 @@ class StfpmiAPI:
         return response.json()["token"]
 
     def find_person(self, surname):
+        """Find a person by his surname."""
+
         username = str(surname.encode("utf-8"))[2: -1]  # Skip initial and final symbols: b'some_string' -> some_string
         username = username.replace("\\x",
-                                    "%").upper()  # Prepare the string: \xd0\x94\xd1\x80\xd0\xb0\xd0\xb3\xd1\x83\xd0\xbd ->
-        #                   -> %D0%94%D1%80%D0%B0%D0%B3%D1%83%D0%BD
+                                    "%").upper()    # Prepare the string: \xd0\x94\xd1\x80\xd0\xb0\xd0\xb3\xd1\x83\xd0\xbd ->
+                                                    #                   -> %D0%94%D1%80%D0%B0%D0%B3%D1%83%D0%BD
 
         url = f"https://stfpmi.ru/api/accounts/search/{username}"
         response = requests.get(url, headers=self.__headers)
-        return PersonInfo(response.json()[0])
+        return self.find_person_by_user_name(response.json()[0]["username"])
+
+    def find_person_by_user_name(self, username):
+        """"Find person by username on the web-site."""
+
+        url = f"https://stfpmi.ru/api/accounts/profile/{username}"
+        response = requests.get(url, headers=self.__headers)
+        return PersonInfo(response.json())
 
     def get_user_info(self):
         url = "https://stfpmi.ru/api/accounts/profile/my"
@@ -82,3 +98,25 @@ class StfpmiAPI:
         url = f"https://stfpmi.ru/api/washing/all_records/{SpecialRoom.washing}/{begin_time_iso}/{end_time_iso}"
         response = requests.get(url, headers=self.__headers)
         return list(map(WashingMachine, response.json()))
+
+    def scheduled_room_record(self, room_name, begin_time_iso, end_time_iso=datetime.now().isoformat()):
+        """Give information about records in a scheduled room.
+
+        Arguments:
+            room_name:          name of a scheduled room (e.g. "клуб") in both lowercase and uppercase.
+            begin_time_iso:     time of the event start.
+            end_time_iso:       time of the event end (current time by default).
+
+        Exception:
+            RuntimeError:       if the "room_name" does not correspond to any real room name.
+
+        """
+        room_name_low = room_name.lower()
+        scheduled_room_component_id = SpecialRoom.room_id[room_name_low]
+
+        if scheduled_room_component_id is None:
+            raise RuntimeError("Error! Unexpected room " + room_name + "!")
+
+        url = f"https://stfpmi.ru/api/scheduled_rooms/all_records/{scheduled_room_component_id}/{begin_time_iso}/{end_time_iso}"
+        response = requests.get(url, headers=self.__headers)
+        return list(map(ScheduledRoom, response.json()))

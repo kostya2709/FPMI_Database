@@ -37,11 +37,30 @@ class AbstractInfoClass:
         'attribute name 2': 'attribute 2 value'
         ...
         'attribute name n': 'attribute n value'
+        'attribute name k':
+            'attribute name j': 'attribute j value'
+            ...
+            'attribute name i': 'attribute i value'
         """
-        result = ""
-        for key, value in self.__dict__.items():
-            result += str(key) + ": " + str(value) + "\n"
-        return result
+        dashes = 60
+        return dashes * "-" + "\n" + add_attr_str(self, 1) + dashes * "-" + "\n"
+
+
+def add_attr_str(obj, tab_num):
+    result = ""
+    for key, value in obj.__dict__.items():
+        result += tab_num * "\t" + str(key) + ": "
+        if hasattr(value, "__dict__"):
+            result += "\n"
+            result += add_attr_str(value, tab_num + 1)
+        elif isinstance(value, list):
+            result += "\n"
+            for i in value:
+                result += "\n" + add_attr_str(i, tab_num + 1)
+            result += "\n"
+        else:
+            result += str(value) + "\n"
+    return result
 
 
 if __name__ == "__main__":

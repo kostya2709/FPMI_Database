@@ -17,11 +17,22 @@ class PersonInfo(AbstractInfoClass):
         student_status: current program(e.g. BACHELOR or MAGISTER).
         course_number: number of course.
         phystech_school_name: school name(e.g. 'ФПМИ' or 'ФАКИ').
+        birthday:
+        email:
+        vk_username:
+        vk_href:
+        telegram_username:
+        instagram_username:
+        phone_number:
+        date_joined:
+        activist_info:
     '''
 
     available_attr = ["username", "first_name", "last_name", "middle_name", "img",
                     "img_compressed", "dormitory", "room_number", "group_number",
-                    "student_status", "course_number", "phystech_school_name"]
+                    "student_status", "course_number", "phystech_school_name",
+                    "birthday", "email", "vk_username", "vk_href", "telegram_username",
+                    "instagram_username", "phone_number", "date_joined", "activist_info"]
 
     def __init__(self, initial_values: dict):
         PersonInfo.initialize(initial_values, self)
